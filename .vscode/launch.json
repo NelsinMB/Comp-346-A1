@@ -1,18 +1,11 @@
 {
     "configurations": [
-    
+
         {
             "type": "java",
             "name": "Simulator",
             "request": "launch",
             "mainClass": "Simulator",
-            "projectName": "Comp 346 - Assignment 1_1097794"
-        },
-        {
-            "type": "java",
-            "name": "Computer",
-            "request": "launch",
-            "mainClass": "Computer",
             "projectName": "Comp 346 - Assignment 1_1097794"
         },
         "name",

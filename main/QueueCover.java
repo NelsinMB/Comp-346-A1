@@ -6,7 +6,7 @@ import java.util.Queue;
  */
 
 public class QueueCover {
-    Queue<String> queue = new LinkedList<String>();;
+    Queue<Process> queue = new LinkedList<Process>();;
 
     public QueueCover(){
         this.queue.clear(); //Ensure queue is empty upon creation.

@@ -27,11 +27,22 @@ public class Computer {
             System.out.println("\nIODevicesRequested:");
             printArray(IODevicesRequested.get(ID));
         }
+
+        System.out.println("-------");
+        System.out.println("Engaging processor. ");
+        this.processor = new Processor(numberOfInstructions, IORequestAtInstruction, IODevicesRequested);
+
         
-
-
     }
 
+
+
+
+
+
+
+
+    //Prints an array of integers. 
     public void printArray(int[] input) {
         int length = input.length;
         for (int index = 0; index < length; index++) {System.out.print(input[index]);}
