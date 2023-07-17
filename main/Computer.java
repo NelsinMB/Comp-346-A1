@@ -12,12 +12,10 @@ public class Computer {
     IODevice IO2;
     //The following Hashmaps are used to store the input. 
     HashMap<Integer, Integer> numberOfInstructions = new HashMap<Integer, Integer>();
-    //HashMap<Integer, List<Integer>> IORequestAtInstruction = new HashMap<Integer, List<Integer>>();
-    //HashMap<Integer, List<Integer>> IODevicesRequested = new HashMap<Integer, List<Integer>>();
-    int[] IORequestAtInstruction; 
-    int[] IODevicesRequested;
+    HashMap<Integer, int[]> IORequestAtInstruction = new HashMap<Integer, int[]>();
+    HashMap<Integer, int[]> IODevicesRequested = new HashMap<Integer, int[]>();
     
-    public Computer(HashMap<Integer, Integer> input1, int[] input2, int[] input3) {
+    public Computer(HashMap<Integer, Integer> input1, HashMap<Integer, int[]> input2, HashMap<Integer, int[]> input3) {
         this.numberOfInstructions = input1;
         this.IORequestAtInstruction = input2;
         this.IODevicesRequested = input3;
@@ -25,7 +23,9 @@ public class Computer {
         System.out.println("The following input was provided:");
         for (int ID = 1; ID < numberOfInstructions.size()+1; ID++) {
             System.out.println("\nProcessID: \n" + numberOfInstructions.get(ID) + "\nIORequestAtTimes:");
-            printArray(IORequestAtInstruction);
+            printArray(IORequestAtInstruction.get(ID));
+            System.out.println("\nIODevicesRequested:");
+            printArray(IODevicesRequested.get(ID));
         }
         
 

@@ -3,6 +3,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Scanner;
 
 public class Simulator {
@@ -12,8 +13,8 @@ public class Simulator {
         Scanner scanner = new Scanner(new File("/Users/nelsin/Desktop/Code/Comp 346 - Assignment 1/main/text.txt"));
         scanner.nextLine();
         HashMap<Integer, Integer> temp = new HashMap<Integer, Integer>();
-        int[] IORequestAtInstruction = new int[1];
-        int[] IODevicesRequested = new int[1];
+        HashMap<Integer, int[]> IORequestAtInstruction = new HashMap<Integer, int[]>();
+        HashMap<Integer, int[]> IODevicesRequested = new HashMap<Integer, int[]>();
 
         int counter = 1;
         while (scanner.hasNext()) {
@@ -25,8 +26,8 @@ public class Simulator {
             if (scanner.hasNextLine()) {scanner.nextLine();}
 
             temp.put(counter, parseNumberOfInstructionsInput(numberOfInstructionsAsString));
-            IORequestAtInstruction =  parseIORequestAtTimes(temp.get(counter), IORequestAtInstructionAsString);
-            IODevicesRequested =  parseIODevicesRequested(IORequestAtInstruction, temp.get(counter), IODevicesRequestedAsString);
+            IORequestAtInstruction.put(counter, parseIORequestAtTimes(temp.get(counter), IORequestAtInstructionAsString));
+            IODevicesRequested.put(counter, parseIODevicesRequested(IORequestAtInstruction.get(counter), temp.get(counter), IODevicesRequestedAsString));
             
         
             counter++;
