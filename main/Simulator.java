@@ -2,43 +2,42 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Scanner;
 
 public class Simulator {
 
-    public static void main(String args[]) throws FileNotFoundException {
-        Computer computer = new Computer();
-        getInput(computer);
-        System.out.println("Number of instructions: " + computer.numberOfInstructions);
-    }
 
-    public static void getInput(Computer computer) throws FileNotFoundException {
+    public static void main(String args[]) throws FileNotFoundException {
         Scanner scanner = new Scanner(new File("/Users/nelsin/Desktop/Code/Comp 346 - Assignment 1/main/text.txt"));
         scanner.nextLine();
+        HashMap<Integer, Integer> temp = new HashMap<Integer, Integer>();
+        int[] IORequestAtInstruction = new int[1];
+        int[] IODevicesRequested = new int[1];
+
         int counter = 1;
         while (scanner.hasNext()) {
-            System.out.println("ProcessID: " + counter );
+            //System.out.println("ProcessID: " + counter );
             scanner.next();
             String numberOfInstructionsAsString = scanner.next();
             String IORequestAtInstructionAsString = scanner.next();
             String IODevicesRequestedAsString = scanner.next();
             if (scanner.hasNextLine()) {scanner.nextLine();}
 
-            computer.numberOfInstructions.put(counter, parseNumberOfInstructionsInput(numberOfInstructionsAsString));
-            computer.IORequestAtInstruction =  parseIORequestAtTimes(computer.numberOfInstructions.get(counter), IORequestAtInstructionAsString);
-            computer.IODevicesRequested =  parseIODevicesRequested(computer, computer.numberOfInstructions.get(counter), IODevicesRequestedAsString);
+            temp.put(counter, parseNumberOfInstructionsInput(numberOfInstructionsAsString));
+            IORequestAtInstruction =  parseIORequestAtTimes(temp.get(counter), IORequestAtInstructionAsString);
+            IODevicesRequested =  parseIODevicesRequested(IORequestAtInstruction, temp.get(counter), IODevicesRequestedAsString);
             
         
-            
-            for (int i = 1; i < computer.numberOfInstructions.get(counter); i++) {
-                System.out.println(computer.IODevicesRequested[i]);
-            }
-            
-        
-
             counter++;
         }
         scanner.close();
+        Computer computer = new Computer(temp, IORequestAtInstruction, IODevicesRequested);
+
+    }
+
+    public static void getInput() throws FileNotFoundException {
+        
     }
     
     public static int parseNumberOfInstructionsInput(String two) {
@@ -63,7 +62,7 @@ public class Simulator {
         return returnArray;
     }
 
-    public static int[] parseIODevicesRequested(Computer computer, Integer sizeOfArray, String four) {
+    public static int[] parseIODevicesRequested(int[] IORequestAtInstruction, Integer sizeOfArray, String four) {
         int[] returnArray = new int[sizeOfArray];
         Arrays.fill(returnArray, 0);
         String[] split = four.split(","); //Split the IORequestAtInstruction input using , as a delimiter
@@ -71,9 +70,9 @@ public class Simulator {
         split[split.length-1] = split[split.length-1].substring(0, split[split.length-1].length()-1); //Remove the ending ']' from the last value in array (array presented as String)
         int counter=0;
         for (int i = 0; i < sizeOfArray; i++) {
-            if (computer.IORequestAtInstruction[i] == 1) {
+            if (IORequestAtInstruction[i] == 1) {
                 returnArray[i] = Integer.valueOf(split[counter]);
-                System.out.println(Integer.valueOf(split[counter]));
+                //System.out.println(Integer.valueOf(split[counter]));
                 counter++;
             }
         }
