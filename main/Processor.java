@@ -2,6 +2,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 public class Processor {
 
@@ -11,11 +12,14 @@ public class Processor {
     Process currentProcess;
     IODevice IO1;
     IODevice IO2;
+    Computer computer;
 
-    public Processor(HashMap<Integer, Integer> numberOfInstructions, HashMap<Integer, int[]> IORequestAtInstruction,
+    public Processor(Computer computer, HashMap<Integer, Integer> numberOfInstructions, HashMap<Integer, int[]> IORequestAtInstruction,
             HashMap<Integer, int[]> IODeviceRequested, IODevice IO1, IODevice IO2) {
         this.IO1 = IO1;
         this.IO2 = IO2;
+        this.computer = computer;
+        computer.processor = this; //Ensure processor field is not null in Commputer
         // System.out.println("Processor: Processor active.");
         // System.out.println("Processor: Creating processes from inputs");
         for (Map.Entry<Integer, Integer> entry : numberOfInstructions.entrySet()) {
@@ -39,8 +43,17 @@ public class Processor {
         int counter = 2; // Whatever, start with 2
         while (true) {
             if (counter > 1) {
-                currentProcess = readyQueue.queue.remove(); // Load new process
-                counter = 0; // Start back at 0
+                try {
+                    currentProcess = readyQueue.queue.remove(); // Load new process
+                    counter = 0; // Start back at 0
+                } catch (NoSuchElementException e) {
+                    //Check whether there is active I/O, if not, we are done.
+                    if (IO1.waitQueue.isEmpty() && IO2.waitQueue.isEmpty() && counter == 2) {
+                        System.out.println("No more processes or IO. Terminating.");
+                        break;
+
+                    }
+                }
             } else {
                 // Maintain current process
             }
@@ -59,6 +72,8 @@ public class Processor {
                     this.IO2.waitQueue.put(currentProcess, 5); //Begins at 5
                     currentProcess.getPCB().setProcessState(State.WAITING);
                     counter++;
+                } else if (executionResult == 4) { //End of process
+                    counter = 2; //Same as reaching current limit
                 }
 
                 System.out.println("Name of process being executed now:" + currentProcess.processID);
@@ -85,7 +100,7 @@ public class Processor {
                 }
 
 
-            }
+            } 
 
         }
 
@@ -103,11 +118,9 @@ public class Processor {
      * Checks whether the currentProcess is eligible for termination (programCounter = numberOfInstructions)
      */
     public void reload() {
-        if (currentProcess.isDone() == 0 && currentProcess.pcb.getProcessState() != State.WAITING) { // notDone
-            readyQueue.queue.add(currentProcess);
-        } else { // Done
-
-        }
+       if (currentProcess.getPCB().getProcessState() != State.TERMINATED && currentProcess.getPCB().getProcessState() != State.WAITING) {
+        readyQueue.queue.add(currentProcess);
+       }
     }
 
     /*

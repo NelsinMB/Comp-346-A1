@@ -7,7 +7,7 @@ public class PCB {
 
     public PCB (int numberOfInstructions) {
         this.processState = State.READY; //Is the state 'NEW' necessary?
-        this.programCounter = 0; //"Yoju can assume that the instructions of each process start at instruction 0"
+        this.programCounter = 0; //"You can assume that the instructions of each process start at instruction 0"
         this.numberOfInstructions = numberOfInstructions;
     }
 

@@ -38,9 +38,7 @@ public class Simulator {
             scanner.close();
             Computer computer = new Computer(temp, IORequestAtInstruction, IODevicesRequested);
         } catch (Exception e) {
-            System.out.println(e.toString());
-            System.out.println(e.getStackTrace()[0].getClassName());
-            System.out.println(e.getStackTrace()[0].getLineNumber());
+            e.printStackTrace();
 
 
         }

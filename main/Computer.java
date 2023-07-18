@@ -34,8 +34,20 @@ public class Computer {
         System.out.println("-------");
         System.out.println("Engaging processor. ");
         //Pass the relevant HashMaps to the processor, as well as IODevices
-        this.processor = new Processor(numberOfInstructions, IORequestAtInstruction, IODevicesRequested, IO1, IO2);  
+        this.processor = new Processor(this, numberOfInstructions, IORequestAtInstruction, IODevicesRequested, IO1, IO2); //I think the assignment only occurs after constructor. 
 
+    }
+
+    public Processor getProcessor() {
+        return this.processor;
+    }
+
+    public IODevice getIO1() {
+        return this.IO1;
+    }
+
+    public IODevice getIO2() {
+        return this.IO2;
     }
 
 

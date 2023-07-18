@@ -20,8 +20,8 @@ public class IODevice {
             if (entry.getValue() != 0) {
                 entry.setValue(entry.getValue()-1); //Decrement by 1
             } else { //Process has been in waitQueue for 5 ticks.
-                waitQueue.remove(entry);
-                computer.processor.addToQueue(entry.getKey()); //Add process that completed I/O to queue.
+                waitQueue.remove(entry.getKey()); 
+                computer.getProcessor().addToQueue(entry.getKey()); //Add process that completed I/O to queue.
                 
             }
         }
