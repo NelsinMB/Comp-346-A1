@@ -1,3 +1,4 @@
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -50,11 +51,13 @@ public class Processor {
                 if (executionResult == 0) {
                     counter++;
                 } else if (executionResult == 1) {
-                    this.IO1.waitQueue.queue.add(currentProcess);
+                    this.IO1.waitQueue.put(currentProcess, 5); //Begins at 5
+                    currentProcess.getPCB().setProcessState(State.WAITING);
                     counter++;
 
                 } else if (executionResult  == 2) {
-                    this.IO2.waitQueue.queue.add(currentProcess);
+                    this.IO2.waitQueue.put(currentProcess, 5); //Begins at 5
+                    currentProcess.getPCB().setProcessState(State.WAITING);
                     counter++;
                 }
 
@@ -66,20 +69,52 @@ public class Processor {
                 System.out.println("The content of the wait queue for IO device 2:");
                 printWaitQueue2();
 
+
                 // Before or after printing to console??
 
-                if (counter == 1) {
-                    if (currentProcess.isDone() == 0) { // notDone
-                        readyQueue.queue.add(currentProcess);
-                    } else { // Done
+                /*
+                 * Methods to run on each cycle: 
+                 * - Check whether a process is terminated.
+                 * - Update wait queue.
+                 * - Transfer from wait queue to ready queue.
+                 */
 
-                    }
+                updateWaitQueues();
+                if (counter == 2) { //Only on last cycle do we consider requeing. 
+                    reload();
                 }
+
 
             }
 
         }
 
+    }
+
+    /*
+     * Decrements the time remaining for processes in the wait queues of IO devices by 1. To be called when a time unit has passed.
+     */
+    public void updateWaitQueues() {
+        this.IO1.decrementWaits();
+        this.IO2.decrementWaits();
+    }
+
+    /*
+     * Checks whether the currentProcess is eligible for termination (programCounter = numberOfInstructions)
+     */
+    public void reload() {
+        if (currentProcess.isDone() == 0 && currentProcess.pcb.getProcessState() != State.WAITING) { // notDone
+            readyQueue.queue.add(currentProcess);
+        } else { // Done
+
+        }
+    }
+
+    /*
+     * Insert a process into the readyQueue
+     */
+    public void addToQueue(Process process) {
+        readyQueue.queue.add(process);
     }
 
     public void printReadyQueue() {
@@ -92,16 +127,18 @@ public class Processor {
     }
 
     public void printWaitQueue1() {
-        Iterator<Process> iterator = IO1.waitQueue.queue.iterator();
-        while (iterator.hasNext()) {
-            System.out.println(iterator.next().processID);
+        for (Map.Entry<Process, Integer> entry : IO1.waitQueue.entrySet()) {
+            int processID = entry.getKey().processID;
+            int timeToCompletion = entry.getValue();
+            System.out.println("The process" + processID + " has " + timeToCompletion + " time units till completion.");
         }
     }
 
     public void printWaitQueue2() {
-        Iterator<Process> iterator = IO2.waitQueue.queue.iterator();
-        while (iterator.hasNext()) {
-            System.out.println(iterator.next().processID);
+        for (Map.Entry<Process, Integer> entry : IO2.waitQueue.entrySet()) {
+            int processID = entry.getKey().processID;
+            int timeToCompletion = entry.getValue();
+            System.out.println("The process" + processID + " has " + timeToCompletion + " time units till completion.");
         }
     }
 

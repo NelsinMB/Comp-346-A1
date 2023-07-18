@@ -1,3 +1,4 @@
+
 public class Process {
 
     int processID;
@@ -35,23 +36,28 @@ public class Process {
      */
 
     public int executeInstruction() {
-        int instructionToBeExecuted = this.pcb.programCounter;
+        int instructionToBeExecuted = pcb.getProgramCounter();
         if (IORequestAtInstruction[instructionToBeExecuted] == 0) {
             pcb.setProgramCounter(pcb.getProgramCounter() + 1);
             return 0;
         } else {
             pcb.setProgramCounter(pcb.getProgramCounter()+1);
+            pcb.setProcessState(State.WAITING); //Process is now waiting
             return IODeviceRequested[instructionToBeExecuted];
         }
     }
 
     public int isDone() {
         if (this.pcb.programCounter == this.pcb.numberOfInstructions) {
-            this.pcb.setProcessState(this.pcb.processState.TERMINATED);
+            pcb.setProcessState(State.TERMINATED);
             return 1;
         } else {
             return 0;
         }
+    }
+
+    public PCB getPCB() {
+        return this.pcb;
     }
     
 }

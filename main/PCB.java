@@ -23,13 +23,13 @@ public class PCB {
         return this.programCounter;
     }
 
-    //Using enums restricts possible options (compared to Strings)
-    enum State {
-        READY,
-        WAITING,
-        TERMINATED,
-        RUNNING
+    public State getProcessState() {
+        return processState;
     }
+
+
+    //Using enums restricts possible options (compared to Strings)
+    
     
     
 }

@@ -16,11 +16,12 @@ public class Computer {
     HashMap<Integer, int[]> IODevicesRequested = new HashMap<Integer, int[]>();
     
     public Computer(HashMap<Integer, Integer> input1, HashMap<Integer, int[]> input2, HashMap<Integer, int[]> input3) {
-        this.IO1 = new IODevice();
-        this.IO2 = new IODevice();
+        this.IO1 = new IODevice(this);
+        this.IO2 = new IODevice(this);
         this.numberOfInstructions = input1;
         this.IORequestAtInstruction = input2;
         this.IODevicesRequested = input3;
+
         System.out.println("Computer is now online.");
         System.out.println("The following input was provided:");
         for (int ID = 1; ID < numberOfInstructions.size()+1; ID++) {
