@@ -1,3 +1,4 @@
+import java.lang.reflect.Array;
 import java.sql.Time;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -57,6 +58,8 @@ public class Processor {
                         System.out.println("No more processes or IO. Terminating.");
                         break;
 
+                    } else {
+                        currentProcess = new Process(this, -1, 0, new int[1], new int[1]);
                     }
                 }
             } else {
@@ -80,8 +83,7 @@ public class Processor {
                 currentProcess.getPCB().setProcessState(State.WAITING);
                 ticksOnCurrentProcess = 2; // ticksOnCurrentProcess to 2 to signify time for next process.
             } else if (executionResult == 4) { // Indicates no I/O was called and process is complete => Set
-                                               // ticksOnCurrentProcess to 2 to signify time for next process.
-                ticksOnCurrentProcess = 2;
+                ticksOnCurrentProcess = 2; // ticksOnCurrentProcess to 2 to signify time for next process.
             }
 
             System.out.println("Process ID:  " + currentProcess.processID);

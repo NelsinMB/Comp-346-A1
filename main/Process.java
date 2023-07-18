@@ -27,7 +27,7 @@ public class Process {
      */
     public int executeInstruction() {
         int instructionToBeExecuted = pcb.getProgramCounter();
-        if (pcb.numberOfInstructions == pcb.getProgramCounter()) {
+        if ((pcb.numberOfInstructions - 1) == pcb.getProgramCounter()) {
             this.getPCB().setProcessState(State.TERMINATED);
             return 4;
         } else if (IORequestAtInstruction[instructionToBeExecuted] == 0) {
