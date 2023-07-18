@@ -16,6 +16,8 @@ public class Computer {
     HashMap<Integer, int[]> IODevicesRequested = new HashMap<Integer, int[]>();
     
     public Computer(HashMap<Integer, Integer> input1, HashMap<Integer, int[]> input2, HashMap<Integer, int[]> input3) {
+        this.IO1 = new IODevice();
+        this.IO2 = new IODevice();
         this.numberOfInstructions = input1;
         this.IORequestAtInstruction = input2;
         this.IODevicesRequested = input3;

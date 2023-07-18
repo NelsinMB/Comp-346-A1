@@ -40,7 +40,7 @@ public class Process {
             pcb.setProgramCounter(pcb.getProgramCounter() + 1);
             return 0;
         } else {
-            this.pcb.programCounter = this.pcb.programCounter++;
+            pcb.setProgramCounter(pcb.getProgramCounter()+1);
             return IODeviceRequested[instructionToBeExecuted];
         }
     }
