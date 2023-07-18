@@ -1,3 +1,4 @@
+import java.sql.Time;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -14,12 +15,13 @@ public class Processor {
     IODevice IO2;
     Computer computer;
 
-    public Processor(Computer computer, HashMap<Integer, Integer> numberOfInstructions, HashMap<Integer, int[]> IORequestAtInstruction,
+    public Processor(Computer computer, HashMap<Integer, Integer> numberOfInstructions,
+            HashMap<Integer, int[]> IORequestAtInstruction,
             HashMap<Integer, int[]> IODeviceRequested, IODevice IO1, IODevice IO2) {
         this.IO1 = IO1;
         this.IO2 = IO2;
         this.computer = computer;
-        computer.processor = this; //Ensure processor field is not null in Commputer
+        computer.processor = this; // Ensure processor field is not null in Commputer
         // System.out.println("Processor: Processor active.");
         // System.out.println("Processor: Creating processes from inputs");
         for (Map.Entry<Integer, Integer> entry : numberOfInstructions.entrySet()) {
@@ -40,74 +42,79 @@ public class Processor {
     }
 
     public void Loop() {
-        int counter = 2; // Whatever, start with 2
+        int ticksOnCurrentProcess = -1; // ticksOnCycle
         while (true) {
-            if (counter > 1) {
+            if (ticksOnCurrentProcess > 1 || ticksOnCurrentProcess == -1) {
                 try {
-                    currentProcess = readyQueue.queue.remove(); // Load new process
-                    counter = 0; // Start back at 0
-                } catch (NoSuchElementException e) {
-                    //Check whether there is active I/O, if not, we are done.
-                    if (IO1.waitQueue.isEmpty() && IO2.waitQueue.isEmpty() && counter == 2) {
+                    currentProcess = readyQueue.queue.remove(); // Either two ticks of time spent on current process, or
+                                                                // initialization => Load new process if possible.
+                    ticksOnCurrentProcess = 0; // Reset counter for new process.
+                } catch (NoSuchElementException e) { // Indicates readyQueue is empty.
+
+                    if (IO1.waitQueue.isEmpty() && IO2.waitQueue.isEmpty() && ticksOnCurrentProcess == 2) { // readyQueue,
+                                                                                                            // waitQueues
+                        // are empty => Terminate.
                         System.out.println("No more processes or IO. Terminating.");
                         break;
 
                     }
                 }
             } else {
-                // Maintain current process
+                // Two ticks have not yet been spent on current process => Increment
+                // ticksCounter.
             }
-            System.out.println("counter: " + counter);
 
-            if (currentProcess != null) {
-                int executionResult = currentProcess.executeInstruction(); //Necessary to not call function multiple times.
-                if (executionResult == 0) {
-                    counter++;
-                } else if (executionResult == 1) {
-                    this.IO1.waitQueue.put(currentProcess, 5); //Begins at 5
-                    currentProcess.getPCB().setProcessState(State.WAITING);
-                    counter++;
+            // if (currentProcess != null) {
+            ticksOnCurrentProcess++;
+            int executionResult = currentProcess.executeInstruction(); // Assign output of executeInstruction to
+                                                                       // variable to avoid multiple calls.
+            if (executionResult == 0) { // Indicates no I/O was called, and process is not complete.
+            } else if (executionResult == 1) { // Indicates I/O device 1 was called => Set current process state to
+                                               // WAITING. Add to queue with 5 ticks remaining.
+                this.IO1.waitQueue.put(currentProcess, 5);
+                currentProcess.getPCB().setProcessState(State.WAITING);
+                ticksOnCurrentProcess = 2; // ticksOnCurrentProcess to 2 to signify time for next process.
+            } else if (executionResult == 2) { // Indicates I/O device 2 was called => Set current process state to
+                                               // WAITING. Add to queue with 5 ticks remaining.
+                this.IO2.waitQueue.put(currentProcess, 5);
+                currentProcess.getPCB().setProcessState(State.WAITING);
+                ticksOnCurrentProcess = 2; // ticksOnCurrentProcess to 2 to signify time for next process.
+            } else if (executionResult == 4) { // Indicates no I/O was called and process is complete => Set
+                                               // ticksOnCurrentProcess to 2 to signify time for next process.
+                ticksOnCurrentProcess = 2;
+            }
 
-                } else if (executionResult  == 2) {
-                    this.IO2.waitQueue.put(currentProcess, 5); //Begins at 5
-                    currentProcess.getPCB().setProcessState(State.WAITING);
-                    counter++;
-                } else if (executionResult == 4) { //End of process
-                    counter = 2; //Same as reaching current limit
-                }
+            System.out.println("Process ID:  " + currentProcess.processID);
+            System.out.println("Ready queue: ");
+            printReadyQueue();
+            System.out.println("IO device 1 wait queue: ");
+            printWaitQueue1();
+            System.out.println("IO device 2 wait queue: ");
+            printWaitQueue2();
 
-                System.out.println("Name of process being executed now:" + currentProcess.processID);
-                System.out.println("Content of the ready queue:");
-                printReadyQueue();
-                System.out.println("The content of the wait queue for IO device 1:");
-                printWaitQueue1();
-                System.out.println("The content of the wait queue for IO device 2:");
-                printWaitQueue2();
+            /*
+             * Methods to run on each cycle:
+             * - Check whether a process is terminated.
+             * - Update wait queue.
+             * - Transfer from wait queue to ready queue.
+             * Before or after printing to console??
+             */
 
+            updateWaitQueues();
+            if (ticksOnCurrentProcess == 2) { // Indicates the second cycle has past for the current process => Consider
+                                              // requeing.
+                reinsert();
+            }
 
-                // Before or after printing to console??
-
-                /*
-                 * Methods to run on each cycle: 
-                 * - Check whether a process is terminated.
-                 * - Update wait queue.
-                 * - Transfer from wait queue to ready queue.
-                 */
-
-                updateWaitQueues();
-                if (counter == 2) { //Only on last cycle do we consider requeing. 
-                    reload();
-                }
-
-
-            } 
+            // }
 
         }
 
     }
 
     /*
-     * Decrements the time remaining for processes in the wait queues of IO devices by 1. To be called when a time unit has passed.
+     * Decrements the time remaining for processes in the wait queues of IO devices
+     * by 1. To be called when a time unit has passed.
      */
     public void updateWaitQueues() {
         this.IO1.decrementWaits();
@@ -115,23 +122,23 @@ public class Processor {
     }
 
     /*
-     * Checks whether the currentProcess is eligible for termination (programCounter = numberOfInstructions)
+     * Checks whether the currentProcess is eligible for termination (programCounter
+     * = numberOfInstructions)
      */
-    public void reload() {
-       if (currentProcess.getPCB().getProcessState() != State.TERMINATED && currentProcess.getPCB().getProcessState() != State.WAITING) {
-        readyQueue.queue.add(currentProcess);
-       }
+    public void reinsert() {
+        if (currentProcess.getPCB().getProcessState() != State.TERMINATED
+                && currentProcess.getPCB().getProcessState() != State.WAITING) {
+            readyQueue.queue.add(currentProcess);
+        }
     }
 
-    /*
-     * Insert a process into the readyQueue
-     */
+    /* Auxilliary functions */
+
     public void addToQueue(Process process) {
         readyQueue.queue.add(process);
     }
 
     public void printReadyQueue() {
-
         Iterator<Process> iterator = readyQueue.queue.iterator();
         while (iterator.hasNext()) {
             System.out.println(iterator.next().processID);
@@ -143,7 +150,7 @@ public class Processor {
         for (Map.Entry<Process, Integer> entry : IO1.waitQueue.entrySet()) {
             int processID = entry.getKey().processID;
             int timeToCompletion = entry.getValue();
-            System.out.println("The process" + processID + " has " + timeToCompletion + " time units till completion.");
+            System.out.println("The process " + processID + " has " + timeToCompletion + " time units till completion.");
         }
     }
 
@@ -151,11 +158,9 @@ public class Processor {
         for (Map.Entry<Process, Integer> entry : IO2.waitQueue.entrySet()) {
             int processID = entry.getKey().processID;
             int timeToCompletion = entry.getValue();
-            System.out.println("The process" + processID + " has " + timeToCompletion + " time units till completion.");
+            System.out.println("The process " + processID + " has " + timeToCompletion + " time units till completion.");
         }
     }
-
-    // **** Auxilliary methods ****
 
     public void printArray(int[] input) {
         int length = input.length;

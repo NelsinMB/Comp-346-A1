@@ -1,24 +1,20 @@
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Scanner;
 
 public class Simulator {
 
     public static void main(String args[]) {
         try {
-            Scanner scanner = new Scanner(new File("/Users/nelsin/Desktop/Code/Comp 346 - Assignment 1/main/text copy.txt"));
+            Scanner scanner = new Scanner(new File("/Users/nelsin/Desktop/Code/Comp 346 - Assignment 1/main/text.txt"));
             scanner.nextLine();
-            HashMap<Integer, Integer> temp = new HashMap<Integer, Integer>();
+            HashMap<Integer, Integer> numberOfInstructions = new HashMap<Integer, Integer>();
             HashMap<Integer, int[]> IORequestAtInstruction = new HashMap<Integer, int[]>();
             HashMap<Integer, int[]> IODevicesRequested = new HashMap<Integer, int[]>();
 
             int counter = 1;
             while (scanner.hasNext()) {
-                // System.out.println("ProcessID: " + counter );
                 scanner.next();
                 String numberOfInstructionsAsString = scanner.next();
                 String IORequestAtInstructionAsString = scanner.next();
@@ -27,26 +23,21 @@ public class Simulator {
                     scanner.nextLine();
                 }
 
-                temp.put(counter, parseNumberOfInstructionsInput(numberOfInstructionsAsString));
+                numberOfInstructions.put(counter, parseNumberOfInstructionsInput(numberOfInstructionsAsString));
                 IORequestAtInstruction.put(counter,
-                        parseIORequestAtTimes(temp.get(counter), IORequestAtInstructionAsString));
+                        parseIORequestAtTimes(numberOfInstructions.get(counter), IORequestAtInstructionAsString));
                 IODevicesRequested.put(counter, parseIODevicesRequested(IORequestAtInstruction.get(counter),
-                        temp.get(counter), IODevicesRequestedAsString));
+                        numberOfInstructions.get(counter), IODevicesRequestedAsString));
 
                 counter++;
             }
             scanner.close();
-            Computer computer = new Computer(temp, IORequestAtInstruction, IODevicesRequested);
+            Computer computer = new Computer(numberOfInstructions, IORequestAtInstruction, IODevicesRequested);
         } catch (Exception e) {
             e.printStackTrace();
 
 
         }
-
-    }
-
-    // Moved to main
-    public static void getInput() throws FileNotFoundException {
 
     }
 

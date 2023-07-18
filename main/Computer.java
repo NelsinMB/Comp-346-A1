@@ -13,14 +13,14 @@ public class Computer {
     //The following Hashmaps are used to store the input. 
     HashMap<Integer, Integer> numberOfInstructions = new HashMap<Integer, Integer>();
     HashMap<Integer, int[]> IORequestAtInstruction = new HashMap<Integer, int[]>();
-    HashMap<Integer, int[]> IODevicesRequested = new HashMap<Integer, int[]>();
+    HashMap<Integer, int[]> IODeviceRequested = new HashMap<Integer, int[]>();
     
-    public Computer(HashMap<Integer, Integer> input1, HashMap<Integer, int[]> input2, HashMap<Integer, int[]> input3) {
+    public Computer(HashMap<Integer, Integer> numberOfInstructions, HashMap<Integer, int[]> IORequestAtInstruction, HashMap<Integer, int[]> IODeviceRequested) {
         this.IO1 = new IODevice(this);
         this.IO2 = new IODevice(this);
-        this.numberOfInstructions = input1;
-        this.IORequestAtInstruction = input2;
-        this.IODevicesRequested = input3;
+        this.numberOfInstructions = numberOfInstructions;
+        this.IORequestAtInstruction = IORequestAtInstruction;
+        this.IODeviceRequested = IODeviceRequested;
 
         System.out.println("Computer is now online.");
         System.out.println("The following input was provided:");
@@ -28,13 +28,13 @@ public class Computer {
             System.out.println("\nProcessID: \n" + numberOfInstructions.get(ID) + "\nIORequestAtTimes:");
             printArray(IORequestAtInstruction.get(ID));
             System.out.println("\nIODevicesRequested:");
-            printArray(IODevicesRequested.get(ID));
+            printArray(IODeviceRequested.get(ID));
         }
 
         System.out.println("-------");
         System.out.println("Engaging processor. ");
         //Pass the relevant HashMaps to the processor, as well as IODevices
-        this.processor = new Processor(this, numberOfInstructions, IORequestAtInstruction, IODevicesRequested, IO1, IO2); //I think the assignment only occurs after constructor. 
+        this.processor = new Processor(this, numberOfInstructions, IORequestAtInstruction, IODeviceRequested, IO1, IO2); //I think the assignment only occurs after constructor. 
 
     }
 

@@ -1,44 +1,30 @@
 
 public class Process {
 
+    Processor processor;
     int processID;
     int[] IORequestAtInstruction;
     int[] IODeviceRequested;
     PCB pcb;
     int numberOfInstructions;
-    Processor processor;
 
     public Process(Processor processor, int processID, int numberOfInstructions, int[] IORequestAtInstruction,
             int[] IODeviceRequested) {
-                this.processor = processor;
+        this.processor = processor;
         this.processID = processID;
         this.IORequestAtInstruction = IORequestAtInstruction;
         this.IODeviceRequested = IODeviceRequested;
         this.pcb = new PCB(numberOfInstructions);
+        this.numberOfInstructions = numberOfInstructions; // ***Remove this field in process (i.e. just in PCB?)
     }
 
-    // 0 for execute instruction
-    // 1 for IO1
-    // 2 for IO2
-
     /*
-     * Thoughts:
-     * Check whether the instruction is an IO request. If not,
-     * - Increment program counter.
-     * - Check whether program counter = number of instructions, if yes, change
-     * pcb.state to TERMINATED.
-     * - In the processor, have it check the status of the process, add to correct
-     * queue.
-     * - Return 0.
-     *
-     * If yes,
-     * - Increment program counter.
-     * - Return 1/2 depending on I/O device requested.
-     * - Change pcb.state to WAITING.
-     * - Add to correct wait queue in IODevice.
-     * - Will need a counter.
+     * IORequestAtInstruction array stores 0,1,2 for where value =
+     * IORequestAtInstruction[instructionNumber] denotes the following:
+     * value = 0 => no I/O
+     * value = 1 => I/O device 1
+     * value = 2 => I/O device 2
      */
-
     public int executeInstruction() {
         int instructionToBeExecuted = pcb.getProgramCounter();
         if (pcb.numberOfInstructions == pcb.getProgramCounter()) {
