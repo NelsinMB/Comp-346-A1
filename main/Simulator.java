@@ -38,7 +38,7 @@ public class Simulator {
             scanner.close();
             Computer computer = new Computer(temp, IORequestAtInstruction, IODevicesRequested);
         } catch (Exception e) {
-            System.out.println("File not found");
+            System.out.println(e.toString());
 
         }
 

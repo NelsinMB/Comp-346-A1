@@ -30,10 +30,13 @@ public class Computer {
 
         System.out.println("-------");
         System.out.println("Engaging processor. ");
-        this.processor = new Processor(numberOfInstructions, IORequestAtInstruction, IODevicesRequested);
+        //Pass the relevant HashMaps to the processor, as well as IODevices
+        this.processor = new Processor(numberOfInstructions, IORequestAtInstruction, IODevicesRequested, IO1, IO2);  
 
-        
     }
+
+
+
 
 
 
