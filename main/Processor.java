@@ -29,6 +29,7 @@ public class Processor {
     }
 
     public void Loop() {
+        int ticks = 0;
         int ticksOnCurrentProcess = -1; // ticksOnCycle
         while (true) {
             if (ticksOnCurrentProcess > 1 || ticksOnCurrentProcess == -1) {
@@ -71,13 +72,15 @@ public class Processor {
                 ticksOnCurrentProcess = 2; // ticksOnCurrentProcess to 2 to signify time for next process.
             }
 
+            System.out.println("Tick number: " + ticks);
             System.out.println("Process ID:  " + currentProcess.processID);
-            System.out.println("Ready queue: ");
+            System.out.print("Ready queue: ");
             printReadyQueue();
             System.out.println("IO device 1 wait queue: ");
             printWaitQueue1();
             System.out.println("IO device 2 wait queue: ");
             printWaitQueue2();
+            System.out.println("");
 
             /*
              * Methods to run on each cycle:
@@ -94,7 +97,7 @@ public class Processor {
             }
 
             // }
-
+            ticks++;
         }
 
     }
@@ -128,8 +131,9 @@ public class Processor {
     public void printReadyQueue() {
         Iterator<Process> iterator = readyQueue.iterator();
         while (iterator.hasNext()) {
-            System.out.println(iterator.next().processID);
+            System.out.print(iterator.next().processID);
         }
+        System.out.println("");
 
     }
 
@@ -137,16 +141,18 @@ public class Processor {
         for (Map.Entry<Process, Integer> entry : getComputer().getIO1().waitQueue.entrySet()) {
             int processID = entry.getKey().processID;
             int timeToCompletion = entry.getValue();
-            System.out.println("The process " + processID + " has " + timeToCompletion + " time units till completion.");
+            System.out.println("--The process " + processID + " has " + timeToCompletion + " time units till completion.");
         }
+        System.out.println("");
     }
 
     public void printWaitQueue2() {
         for (Map.Entry<Process, Integer> entry : getComputer().getIO2().waitQueue.entrySet()) {
             int processID = entry.getKey().processID;
             int timeToCompletion = entry.getValue();
-            System.out.println("The process " + processID + " has " + timeToCompletion + " time units till completion.");
+            System.out.println("--The process " + processID + " has " + timeToCompletion + " time units till completion.");
         }
+        System.out.println("");
     }
 
     public void printArray(int[] input) {
