@@ -30,4 +30,12 @@ public class IODevice {
 
     }
 
+    public Computer getComputer() {
+        return this.computer;
+    }
+
+    public HashMap<Process, Integer> getWaitQueue() {
+        return this.waitQueue;
+    }
+
 }

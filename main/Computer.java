@@ -1,9 +1,4 @@
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Scanner;
 
 public class Computer {
 
@@ -22,19 +17,21 @@ public class Computer {
         this.IORequestAtInstruction = IORequestAtInstruction;
         this.IODeviceRequested = IODeviceRequested;
 
-        System.out.println("Computer is now online.");
-        System.out.println("The following input was provided:");
-        for (int ID = 1; ID < numberOfInstructions.size()+1; ID++) {
-            System.out.println("\nProcessID: \n" + numberOfInstructions.get(ID) + "\nIORequestAtTimes:");
-            printArray(IORequestAtInstruction.get(ID));
-            System.out.println("\nIODevicesRequested:");
-            printArray(IODeviceRequested.get(ID));
-        }
+        //System.out.println("Computer is now online.");
+        //System.out.println("The following input was provided:");
+        //for (int ID = 1; ID < numberOfInstructions.size()+1; ID++) {
+        //System.out.println("\nProcessID: \n" + numberOfInstructions.get(ID) + "\nIORequestAtTimes:");
+        //printArray(IORequestAtInstruction.get(ID));
+        //System.out.println("\nIODevicesRequested:");
+        //printArray(IODeviceRequested.get(ID));
+        //}
 
-        System.out.println("-------");
-        System.out.println("Engaging processor. ");
+        //System.out.println("-------");
+        //System.out.println("Engaging processor. ");
+
+
         //Pass the relevant HashMaps to the processor, as well as IODevices
-        this.processor = new Processor(this, numberOfInstructions, IORequestAtInstruction, IODeviceRequested, IO1, IO2); //I think the assignment only occurs after constructor. 
+        this.processor = new Processor(this); //I think the assignment only occurs after constructor. 
 
     }
 
@@ -51,19 +48,28 @@ public class Computer {
     }
 
 
+    public HashMap<Integer, Integer> getNumberOfInstructionsHashMap() {
+        return this.numberOfInstructions;
+    }
 
 
 
+    public HashMap<Integer, int[]> getIORequestAtInstructionHashMap() {
+        return this.IORequestAtInstruction;
+    }
 
-
-
-
-
+    public HashMap<Integer, int[]> getIODeviceRequestedHashMap() {
+        return this.IODeviceRequested;
+    }
 
     //Prints an array of integers. 
     public void printArray(int[] input) {
         int length = input.length;
         for (int index = 0; index < length; index++) {System.out.print(input[index]);}
+    }
+
+    public void setProcessor(Processor processor) {
+        this.processor = processor;
     }
 
 }

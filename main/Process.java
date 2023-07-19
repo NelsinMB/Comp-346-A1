@@ -1,7 +1,7 @@
 
 public class Process {
 
-    Processor processor;
+    private Processor processor;
     int processID;
     int[] IORequestAtInstruction;
     int[] IODeviceRequested;
@@ -14,7 +14,7 @@ public class Process {
         this.processID = processID;
         this.IORequestAtInstruction = IORequestAtInstruction;
         this.IODeviceRequested = IODeviceRequested;
-        this.pcb = new PCB(numberOfInstructions);
+        this.pcb = new PCB(this);
         this.numberOfInstructions = numberOfInstructions; // ***Remove this field in process (i.e. just in PCB?)
     }
 
@@ -27,12 +27,12 @@ public class Process {
      */
     public int executeInstruction() {
         int instructionToBeExecuted = pcb.getProgramCounter();
-        if ((pcb.numberOfInstructions - 1) == pcb.getProgramCounter()) {
+        if ((numberOfInstructions - 1) == pcb.getProgramCounter()) {
             this.getPCB().setProcessState(State.TERMINATED);
             return 4;
         } else if (IORequestAtInstruction[instructionToBeExecuted] == 0) {
             pcb.setProgramCounter(pcb.getProgramCounter() + 1);
-            if (this.getPCB().programCounter == pcb.numberOfInstructions) {
+            if (this.getPCB().programCounter == numberOfInstructions) {
                 pcb.setProcessState(State.TERMINATED);
             }
             return 0;
@@ -40,7 +40,7 @@ public class Process {
             pcb.setProgramCounter(pcb.getProgramCounter() + 1);
             pcb.setProcessState(State.WAITING); // Process is now waiting
             // Do we terminate if I/O is only necessary?
-            if (this.getPCB().programCounter == pcb.numberOfInstructions) {
+            if (this.getPCB().programCounter == numberOfInstructions) {
                 pcb.setProcessState(State.TERMINATED);
             }
             return IODeviceRequested[instructionToBeExecuted];
@@ -50,6 +50,10 @@ public class Process {
 
     public PCB getPCB() {
         return this.pcb;
+    }
+
+    public Processor getProcessor() {
+        return this.processor;
     }
 
 }

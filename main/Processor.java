@@ -1,45 +1,31 @@
-import java.lang.reflect.Array;
-import java.sql.Time;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Queue;
 
 public class Processor {
 
-    QueueCover readyQueue = new QueueCover();
-    Register register1;
-    Register register2;
-    Process currentProcess;
-    IODevice IO1;
-    IODevice IO2;
-    Computer computer;
+    private Queue<Process> readyQueue = new LinkedList<Process>();
+    private Register register1;
+    private Register register2;
+    private Process currentProcess;
+    private Computer computer;
 
-    public Processor(Computer computer, HashMap<Integer, Integer> numberOfInstructions,
-            HashMap<Integer, int[]> IORequestAtInstruction,
-            HashMap<Integer, int[]> IODeviceRequested, IODevice IO1, IODevice IO2) {
-        this.IO1 = IO1;
-        this.IO2 = IO2;
+    public Processor(Computer computer) {
         this.computer = computer;
-        computer.processor = this; // Ensure processor field is not null in Commputer
-        // System.out.println("Processor: Processor active.");
-        // System.out.println("Processor: Creating processes from inputs");
-        for (Map.Entry<Integer, Integer> entry : numberOfInstructions.entrySet()) {
-            if (entry.getKey() != 0) { // numberOfInstructions is not 0
-                Process process = new Process(this, entry.getKey(), numberOfInstructions.get(entry.getKey()),
-                        IORequestAtInstruction.get(entry.getKey()), IODeviceRequested.get(entry.getKey()));
-                this.readyQueue.queue.add(process);
-                // printArray(this.readyQueue.queue.element().IORequestAtInstruction);
-                // System.out.println(this.readyQueue.queue.element().processID);
-                // this.readyQueue.queue.remove();
+        getComputer().setProcessor(this); 
+        this.register1 = new Register(this);
+        this.register2 = new Register(this);
 
+        for (Map.Entry<Integer, Integer> entry : getComputer().numberOfInstructions.entrySet()) {
+            if (entry.getKey() != 0) { // numberOfInstructions is not 0
+                Process process = new Process(this, entry.getKey(), getComputer().getNumberOfInstructionsHashMap().get(entry.getKey()),
+                        getComputer().getIORequestAtInstructionHashMap().get(entry.getKey()), getComputer().getIODeviceRequestedHashMap().get(entry.getKey()));
+                readyQueue.add(process);
             }
         }
-        // System.out.println("Processor: Processes have been added to readyQueue");
-        // System.out.println("Processor: Execution may now begin.");
         Loop();
-
     }
 
     public void Loop() {
@@ -47,14 +33,13 @@ public class Processor {
         while (true) {
             if (ticksOnCurrentProcess > 1 || ticksOnCurrentProcess == -1) {
                 try {
-                    currentProcess = readyQueue.queue.remove(); // Either two ticks of time spent on current process, or
+                    currentProcess = readyQueue.remove(); // Either two ticks of time spent on current process, or
                                                                 // initialization => Load new process if possible.
                     ticksOnCurrentProcess = 0; // Reset counter for new process.
                 } catch (NoSuchElementException e) { // Indicates readyQueue is empty.
 
-                    if (IO1.waitQueue.isEmpty() && IO2.waitQueue.isEmpty() && ticksOnCurrentProcess == 2) { // readyQueue,
-                                                                                                            // waitQueues
-                        // are empty => Terminate.
+                    if (getComputer().getIO1().waitQueue.isEmpty() && getComputer().getIO2().waitQueue.isEmpty() && ticksOnCurrentProcess == 2) { 
+                        // readyQueue, waitQueues are empty => Terminate.
                         System.out.println("No more processes or IO. Terminating.");
                         break;
 
@@ -74,12 +59,12 @@ public class Processor {
             if (executionResult == 0) { // Indicates no I/O was called, and process is not complete.
             } else if (executionResult == 1) { // Indicates I/O device 1 was called => Set current process state to
                                                // WAITING. Add to queue with 5 ticks remaining.
-                this.IO1.waitQueue.put(currentProcess, 5);
+                getComputer().getIO1().waitQueue.put(currentProcess, 5);
                 currentProcess.getPCB().setProcessState(State.WAITING);
                 ticksOnCurrentProcess = 2; // ticksOnCurrentProcess to 2 to signify time for next process.
             } else if (executionResult == 2) { // Indicates I/O device 2 was called => Set current process state to
                                                // WAITING. Add to queue with 5 ticks remaining.
-                this.IO2.waitQueue.put(currentProcess, 5);
+                getComputer().getIO2().waitQueue.put(currentProcess, 5);
                 currentProcess.getPCB().setProcessState(State.WAITING);
                 ticksOnCurrentProcess = 2; // ticksOnCurrentProcess to 2 to signify time for next process.
             } else if (executionResult == 4) { // Indicates no I/O was called and process is complete => Set
@@ -119,8 +104,8 @@ public class Processor {
      * by 1. To be called when a time unit has passed.
      */
     public void updateWaitQueues() {
-        this.IO1.decrementWaits();
-        this.IO2.decrementWaits();
+        getComputer().getIO1().decrementWaits();
+        getComputer().getIO2().decrementWaits();
     }
 
     /*
@@ -130,18 +115,18 @@ public class Processor {
     public void reinsert() {
         if (currentProcess.getPCB().getProcessState() != State.TERMINATED
                 && currentProcess.getPCB().getProcessState() != State.WAITING) {
-            readyQueue.queue.add(currentProcess);
+            readyQueue.add(currentProcess);
         }
     }
 
     /* Auxilliary functions */
 
     public void addToQueue(Process process) {
-        readyQueue.queue.add(process);
+        readyQueue.add(process);
     }
 
     public void printReadyQueue() {
-        Iterator<Process> iterator = readyQueue.queue.iterator();
+        Iterator<Process> iterator = readyQueue.iterator();
         while (iterator.hasNext()) {
             System.out.println(iterator.next().processID);
         }
@@ -149,7 +134,7 @@ public class Processor {
     }
 
     public void printWaitQueue1() {
-        for (Map.Entry<Process, Integer> entry : IO1.waitQueue.entrySet()) {
+        for (Map.Entry<Process, Integer> entry : getComputer().getIO1().waitQueue.entrySet()) {
             int processID = entry.getKey().processID;
             int timeToCompletion = entry.getValue();
             System.out.println("The process " + processID + " has " + timeToCompletion + " time units till completion.");
@@ -157,7 +142,7 @@ public class Processor {
     }
 
     public void printWaitQueue2() {
-        for (Map.Entry<Process, Integer> entry : IO2.waitQueue.entrySet()) {
+        for (Map.Entry<Process, Integer> entry : getComputer().getIO2().waitQueue.entrySet()) {
             int processID = entry.getKey().processID;
             int timeToCompletion = entry.getValue();
             System.out.println("The process " + processID + " has " + timeToCompletion + " time units till completion.");
@@ -170,6 +155,18 @@ public class Processor {
             System.out.print(input[index]);
         }
         System.out.println("");
+    }
+
+    public Computer getComputer() {
+        return this.computer;
+    }
+
+    public Register getRegister1() {
+        return this.register1;
+    }
+
+    public Register getRegister2() {
+        return this.register2;
     }
 
 }
