@@ -57,15 +57,11 @@ public class Processor {
             if (executionResult == 0) { // Indicates no I/O was called, and process is not complete.
             } else if (executionResult == 1) { // Indicates I/O device 1 was called => Set current process state to
                                                // WAITING. Add to queue with 5 ticks remaining.
-                getComputer().getIO1().waitQueue.put(currentProcess, 5);
-                transitionToWait(currentProcess);
-                saveState(currentProcess);
+                transitionToWaitIO1(currentProcess);
                 nextProcess = true;
             } else if (executionResult == 2) { // Indicates I/O device 2 was called => Set current process state to
                                                // WAITING. Add to queue with 5 ticks remaining.
-                getComputer().getIO2().waitQueue.put(currentProcess, 5);
-                transitionToWait(currentProcess);
-                saveState(currentProcess);
+                transitionToWaitIO2(currentProcess);
                 nextProcess = true;
             } else if (executionResult == 4) { // Indicates no I/O was called and process is complete => Set current process state to TERMINATED. 
                 transitionToTerminated(currentProcess);
@@ -84,10 +80,9 @@ public class Processor {
              */
 
             updateWaitQueues();
-            if (ticksOnCurrentProcess == 2) { // Indicates the second cycle has past for the current process => Consider
-                                              // requeing.
+            if (ticksOnCurrentProcess == 2) { 
+                transitionToReady(currentProcess);
                 nextProcess = true;
-
             }
             ticks++;
         }
@@ -102,10 +97,24 @@ public class Processor {
         nextProcess = false;
     }
 
+    public void transitionToReady(Process process) {
+        saveState(process);
+        readyQueue.add(process);
+        process.getPCB().setProcessState(State.READY);
+    }
+
     /*
      * Transitions the state of the process to WAITING.
      */
-    public void transitionToWait(Process process) {
+    public void transitionToWaitIO1(Process process) {
+        saveState(process);
+        getComputer().getIO1().waitQueue.put(currentProcess, 5);
+        process.getPCB().setProcessState(State.WAITING);
+    }
+
+    public void transitionToWaitIO2(Process process) {
+        saveState(process);
+        getComputer().getIO2().waitQueue.put(currentProcess, 5);
         process.getPCB().setProcessState(State.WAITING);
     }
 

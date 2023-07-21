@@ -27,7 +27,7 @@ public class Process {
      */
     public int executeInstruction() {
         int instructionToBeExecuted = pcb.getProgramCounter();
-        if ((numberOfInstructions - 1) == pcb.getProgramCounter()) {
+        if ((numberOfInstructions - 1) == pcb.getProgramCounter()) { //***  Check
             this.getPCB().setProcessState(State.TERMINATED);
             return 4;
         } else if (IORequestAtInstruction[instructionToBeExecuted] == 0) {
@@ -45,6 +45,7 @@ public class Process {
             }
             return IODeviceRequested[instructionToBeExecuted];
         }
+        
 
     }
 

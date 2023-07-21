@@ -18,6 +18,8 @@ public class PCB {
         this.registers.add(process.getProcessor().getRegister2());
     }
 
+
+
     public void setProcessState(State processState) {
         this.processState = processState;
     }
@@ -41,6 +43,7 @@ public class PCB {
     public Register getRegister2() {
         return this.registers.get(1);
     }
+
 
 
 
