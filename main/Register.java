@@ -2,7 +2,7 @@ import java.util.Random;
 
 public class Register {
 
-    public int value;
+    private int value;
     private Processor processor;
 
     public Register(Processor processor) {
@@ -10,6 +10,14 @@ public class Register {
         Random rand = new Random();
         this.value = rand.nextInt();
 
+    }
+
+    public void setValue(int value) {
+        this.value = value;
+    }
+
+    public int getValue() {
+        return this.value;
     }
     
 }

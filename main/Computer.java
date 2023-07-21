@@ -17,20 +17,6 @@ public class Computer {
         this.IORequestAtInstruction = IORequestAtInstruction;
         this.IODeviceRequested = IODeviceRequested;
 
-        //System.out.println("Computer is now online.");
-        //System.out.println("The following input was provided:");
-        //for (int ID = 1; ID < numberOfInstructions.size()+1; ID++) {
-        //System.out.println("\nProcessID: \n" + numberOfInstructions.get(ID) + "\nIORequestAtTimes:");
-        //printArray(IORequestAtInstruction.get(ID));
-        //System.out.println("\nIODevicesRequested:");
-        //printArray(IODeviceRequested.get(ID));
-        //}
-
-        //System.out.println("-------");
-        //System.out.println("Engaging processor. ");
-
-
-        //Pass the relevant HashMaps to the processor, as well as IODevices
         this.processor = new Processor(this); //I think the assignment only occurs after constructor. 
 
     }

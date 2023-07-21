@@ -5,8 +5,10 @@ public class PCB {
     Process process;
     State processState; //Could use ENUM to restrict choices?
     int programCounter;
-    ArrayList<Register> registers = new ArrayList<Register>();
-
+    ArrayList<Register> registers = new ArrayList<Register>(2);
+    int CPUUsed;
+    int clockTimeElapsedSinceStart;
+    
     // *** Why does the PCB store information about CPU registers, scheduling, memory management, accounting, I/O?
 
     public PCB (Process process) {
@@ -31,6 +33,14 @@ public class PCB {
     public State getProcessState() {
         return processState;
     }    
+
+    public Register getRegister1() {
+        return this.registers.get(0);
+    }
+
+    public Register getRegister2() {
+        return this.registers.get(1);
+    }
 
 
 
