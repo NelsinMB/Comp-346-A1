@@ -46,7 +46,7 @@ public class Processor {
 
             if (currentProcess == null) {
                 if (getComputer().getIO1().getWaitQueue().isEmpty()
-                        && getComputer().getIO2().getWaitQueue().isEmpty()) {
+                        && getComputer().getIO2().getWaitQueue().isEmpty() && readyQueue.isEmpty()) {
                     System.exit(0);
                 } else {
                     output(ticks, "No active process");
@@ -81,12 +81,14 @@ public class Processor {
                 ticks++;
             }
             updateWaitQueues();
-
+            
         }
 
     }
 
     public void contextSwitch(Process oldProcess, State oldProcessState) {
+
+    
 
         oldProcess.getPCB().getRegister1().setValue(register1.getValue());
         oldProcess.getPCB().getRegister2().setValue(register2.getValue());
@@ -107,12 +109,7 @@ public class Processor {
             register2.setValue(currentProcess.getPCB().getRegister2().getValue());
             ticksOnCurrentProcess = 0;
         } catch (Exception e) {
-            if (getComputer().getIO1().getWaitQueue().isEmpty() && getComputer().getIO2().getWaitQueue().isEmpty()) {
-
-            } else {
-                currentProcess = null;
-            }
-
+           currentProcess = null;
         }
 
     }

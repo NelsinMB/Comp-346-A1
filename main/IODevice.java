@@ -22,8 +22,13 @@ public class IODevice {
             } else { //Process has been in waitQueue for 5 ticks.
                 waitQueue.remove(entry.getKey()); 
                 
-                computer.getProcessor().addToQueue(entry.getKey()); //Add process that completed I/O to queue. ***Need to check whether it terminated or not.
-                
+                if (entry.getKey().getPCB().getProgramCounter() ==  entry.getKey().numberOfInstructions - 1) {
+                    entry.getKey().getPCB().setProcessState(State.TERMINATED);
+                } else {
+                    entry.getKey().getPCB().setProcessState(State.READY);
+                    computer.getProcessor().addToQueue(entry.getKey());
+                }
+                                
             }
         }
 
