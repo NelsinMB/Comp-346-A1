@@ -17,14 +17,16 @@ public class Processor {
 
     public Processor(Computer computer) {
         this.computer = computer;
-        getComputer().setProcessor(this); 
+        getComputer().setProcessor(this);
         this.register1 = new Register(this);
         this.register2 = new Register(this);
 
         for (Map.Entry<Integer, Integer> entry : getComputer().numberOfInstructions.entrySet()) {
             if (entry.getKey() != 0) { // numberOfInstructions is not 0
-                Process process = new Process(this, entry.getKey(), getComputer().getNumberOfInstructionsHashMap().get(entry.getKey()),
-                        getComputer().getIORequestAtInstructionHashMap().get(entry.getKey()), getComputer().getIODeviceRequestedHashMap().get(entry.getKey()));
+                Process process = new Process(this, entry.getKey(),
+                        getComputer().getNumberOfInstructionsHashMap().get(entry.getKey()),
+                        getComputer().getIORequestAtInstructionHashMap().get(entry.getKey()),
+                        getComputer().getIODeviceRequestedHashMap().get(entry.getKey()));
                 readyQueue.add(process);
             }
         }
@@ -32,128 +34,102 @@ public class Processor {
     }
 
     public void Loop() {
+        if (currentProcess == null) {
+
+            try {
+                currentProcess = readyQueue.remove();
+            } catch (Exception e) {
+
+            }
+        }
         while (true) {
-            /*
-             * The following if statement handles switching of processes.
-             */
-            if (nextProcess) {
-                try {
-                    newProcess();
-                } catch (NoSuchElementException e) { // Indicates readyQueue is empty.
-                    if (getComputer().getIO1().waitQueue.isEmpty() && getComputer().getIO2().waitQueue.isEmpty() && ticksOnCurrentProcess == 2) { 
-                        // readyQueue, waitQueues are empty => Terminate.
-                        System.out.println("No more processes or IO. Terminating.");
-                        break;
-                    } else { //readyQueue empty, but not waitQueues. CPU will not be used.sss
-                        currentProcess = new Process(this, -1, 0, new int[1], new int[1]); //Idle CPU indicated by process with Process ID -1
-                    }
+
+            if (currentProcess == null) {
+                if (getComputer().getIO1().getWaitQueue().isEmpty()
+                        && getComputer().getIO2().getWaitQueue().isEmpty()) {
+                    System.exit(0);
+                } else {
+                    output(ticks, "No active process");
+                    ticks++;
                 }
             } else {
-                //Do nothing
+
+                int executeInstruction = currentProcess.executeInstruction();
+                output(ticks, String.valueOf(currentProcess.getProcessID()));
+                switch (executeInstruction) {
+                    case 0: // No I/O
+                        if (currentProcess.getPCB().getProcessState() == State.TERMINATED) {
+                            contextSwitch(currentProcess, State.TERMINATED);
+                        } else {
+                            if (ticksOnCurrentProcess == 2) {
+                                contextSwitch(currentProcess, State.READY);
+                            }
+                        }
+                        break;
+
+                    case 1: // I/O 1
+                        contextSwitch(currentProcess, State.WAITING1);
+                        break;
+
+                    case 2: // I/O 2
+                        contextSwitch(currentProcess, State.WAITING2);
+                        break;
+
+                }
+
+                ticksOnCurrentProcess++;
+                ticks++;
             }
-
-            int executionResult = currentProcess.executeInstruction(); // Assign output of executeInstruction to
-                                                                       // variable to avoid multiple calls.
-            if (executionResult == 0) { // Indicates no I/O was called, and process is not complete.
-            } else if (executionResult == 1) { // Indicates I/O device 1 was called => Set current process state to
-                                               // WAITING. Add to queue with 5 ticks remaining.
-                transitionToWaitIO1(currentProcess);
-                nextProcess = true;
-            } else if (executionResult == 2) { // Indicates I/O device 2 was called => Set current process state to
-                                               // WAITING. Add to queue with 5 ticks remaining.
-                transitionToWaitIO2(currentProcess);
-                nextProcess = true;
-            } else if (executionResult == 4) { // Indicates no I/O was called and process is complete => Set current process state to TERMINATED. 
-                transitionToTerminated(currentProcess);
-                nextProcess = true;
-            }
-
-            output(ticks, currentProcess.processID);
-            ticksOnCurrentProcess++; //Output complete, increment ticks on current process
-
-
-            /*
-             * With output complete, and ticks on current process incremented, need to do the following. 
-             * - Update wait queues of IO devices.
-             * - Update status of current process.
-             * - Update status of processes on wait queues. 
-             */
-
             updateWaitQueues();
-            if (ticksOnCurrentProcess == 2) { 
-                transitionToReady(currentProcess);
-                nextProcess = true;
-            }
-            ticks++;
+
         }
 
     }
 
-    public void newProcess() {
-        currentProcess = readyQueue.remove();
-        ticksOnCurrentProcess = 0; // Reset counter for new process. 
-        reloadState();
-        ticksOnCurrentProcess = 0;
-        nextProcess = false;
-    }
+    public void contextSwitch(Process oldProcess, State oldProcessState) {
 
-    public void transitionToReady(Process process) {
-        saveState(process);
-        readyQueue.add(process);
-        process.getPCB().setProcessState(State.READY);
-    }
+        oldProcess.getPCB().getRegister1().setValue(register1.getValue());
+        oldProcess.getPCB().getRegister2().setValue(register2.getValue());
 
-    /*
-     * Transitions the state of the process to WAITING.
-     */
-    public void transitionToWaitIO1(Process process) {
-        saveState(process);
-        getComputer().getIO1().waitQueue.put(currentProcess, 5);
-        process.getPCB().setProcessState(State.WAITING);
-    }
+        if (oldProcessState == State.WAITING1) {
+            getComputer().getIO1().getWaitQueue().put(oldProcess, 5);
+        } else if (oldProcessState == State.WAITING2) {
+            getComputer().getIO2().getWaitQueue().put(oldProcess, 5);
+        } else if (oldProcessState == State.READY) {
+            readyQueue.add(oldProcess);
+        } else if (oldProcessState == State.TERMINATED) {
+            // Do nothing
+        }
 
-    public void transitionToWaitIO2(Process process) {
-        saveState(process);
-        getComputer().getIO2().waitQueue.put(currentProcess, 5);
-        process.getPCB().setProcessState(State.WAITING);
-    }
+        try {
+            currentProcess = readyQueue.remove();
+            register1.setValue(currentProcess.getPCB().getRegister1().getValue());
+            register2.setValue(currentProcess.getPCB().getRegister2().getValue());
+            ticksOnCurrentProcess = 0;
+        } catch (Exception e) {
+            if (getComputer().getIO1().getWaitQueue().isEmpty() && getComputer().getIO2().getWaitQueue().isEmpty()) {
 
-    /*
-     * Transitions the state of the process to TERMINATED.
-     */
-    public void transitionToTerminated(Process process) {
-        process.getPCB().setProcessState(State.TERMINATED);
-    }
+            } else {
+                currentProcess = null;
+            }
 
-    /*
-     * Saves values of processor to process.
-     */
-    public void saveState(Process process) {
-        process.getPCB().getRegister1().setValue(register1.getValue());
-        process.getPCB().getRegister2().setValue(register2.getValue());
-    }
-    
-    /*
-     * Restores values of process to processor.
-     */
-    public void reloadState() {
-        register1.setValue(currentProcess.getPCB().getRegister1().getValue());
-        register2.setValue(currentProcess.getPCB().getRegister1().getValue());
+        }
+
     }
 
     /*
      * Handles print to console
      */
-    public void output(int ticks, int currentProcessID) {
+    public void output(int ticks, String currentProcessID) {
         System.out.println("Tick number: " + ticks);
-            System.out.println("Process ID:  " + currentProcess.processID);
-            System.out.print("Ready queue: ");
-            printReadyQueue();
-            System.out.println("IO device 1 wait queue: ");
-            printWaitQueue1();
-            System.out.println("IO device 2 wait queue: ");
-            printWaitQueue2();
-            System.out.println("");
+        System.out.println("Process ID:  " + currentProcessID);
+        System.out.print("Ready queue: ");
+        printReadyQueue();
+        System.out.println("IO device 1 wait queue: ");
+        printWaitQueue1();
+        System.out.println("IO device 2 wait queue: ");
+        printWaitQueue2();
+        System.out.println("");
     }
 
     /*
@@ -164,20 +140,6 @@ public class Processor {
         getComputer().getIO1().decrementWaits();
         getComputer().getIO2().decrementWaits();
     }
-
-    /*
-     * Checks whether the currentProcess is eligible for termination (programCounter
-     * = numberOfInstructions)
-     */
-    public void reinsert() {
-        if (currentProcess.getPCB().getProcessState() != State.TERMINATED
-                && currentProcess.getPCB().getProcessState() != State.WAITING) {
-            readyQueue.add(currentProcess);
-        }
-    }
-
-
-
 
     /* Auxilliary functions */
 
@@ -198,7 +160,8 @@ public class Processor {
         for (Map.Entry<Process, Integer> entry : getComputer().getIO1().waitQueue.entrySet()) {
             int processID = entry.getKey().processID;
             int timeToCompletion = entry.getValue();
-            System.out.println("--The process " + processID + " has " + timeToCompletion + " time units till completion.");
+            System.out.println(
+                    "--The process " + processID + " has " + timeToCompletion + " time units till completion.");
         }
         System.out.println("");
     }
@@ -207,7 +170,8 @@ public class Processor {
         for (Map.Entry<Process, Integer> entry : getComputer().getIO2().waitQueue.entrySet()) {
             int processID = entry.getKey().processID;
             int timeToCompletion = entry.getValue();
-            System.out.println("--The process " + processID + " has " + timeToCompletion + " time units till completion.");
+            System.out.println(
+                    "--The process " + processID + " has " + timeToCompletion + " time units till completion.");
         }
         System.out.println("");
     }

@@ -26,27 +26,20 @@ public class Process {
      * value = 2 => I/O device 2
      */
     public int executeInstruction() {
-        int instructionToBeExecuted = pcb.getProgramCounter();
-        if ((numberOfInstructions - 1) == pcb.getProgramCounter()) { //***  Check
-            this.getPCB().setProcessState(State.TERMINATED);
-            return 4;
-        } else if (IORequestAtInstruction[instructionToBeExecuted] == 0) {
-            pcb.setProgramCounter(pcb.getProgramCounter() + 1);
-            if (this.getPCB().programCounter == numberOfInstructions) {
-                pcb.setProcessState(State.TERMINATED);
-            }
-            return 0;
-        } else {
-            pcb.setProgramCounter(pcb.getProgramCounter() + 1);
-            pcb.setProcessState(State.WAITING); // Process is now waiting
-            // Do we terminate if I/O is only necessary?
-            if (this.getPCB().programCounter == numberOfInstructions) {
-                pcb.setProcessState(State.TERMINATED);
-            }
-            return IODeviceRequested[instructionToBeExecuted];
-        }
-        
+        int nextInstruction = getPCB().getProgramCounter();
 
+        if (nextInstruction == numberOfInstructions - 1) {
+            getPCB().setProcessState(State.TERMINATED);
+        }
+
+        getPCB().setProgramCounter(getPCB().getProgramCounter() + 1); // Increment program counter
+        if (IODeviceRequested[nextInstruction] == 1) {
+            return 1;
+        } else if (IODeviceRequested[nextInstruction] == 2) {
+            return 2;
+        } else {
+            return 0;
+        }
     }
 
     public PCB getPCB() {
@@ -57,4 +50,7 @@ public class Process {
         return this.processor;
     }
 
+    public int getProcessID() {
+        return this.processID;
+    }
 }

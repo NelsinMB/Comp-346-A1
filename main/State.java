@@ -1,6 +1,7 @@
 public enum State {
         READY,
-        WAITING,
+        WAITING1,
+        WAITING2,
         TERMINATED,
         RUNNING
 }
