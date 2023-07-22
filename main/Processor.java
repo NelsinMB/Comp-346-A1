@@ -50,6 +50,9 @@ public class Processor {
                     System.exit(0);
                 } else {
                     output(ticks, "No active process");
+                    if (!readyQueue.isEmpty()) {
+                        currentProcess = readyQueue.remove();
+                    }
                     ticks++;
                 }
             } else {
