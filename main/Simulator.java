@@ -7,15 +7,15 @@ public class Simulator {
 
     public static void main(String args[]) {
         try {
-            Scanner scanner = new Scanner(new File("/Users/nelsin/Desktop/Code/Comp 346 - Assignment 1/main/text copy.txt"));
+            Scanner scanner = new Scanner(new File("/Users/nelsin/Desktop/Code/Comp 346 - Assignment 1/main/text.txt"));
             scanner.nextLine();
             HashMap<Integer, Integer> numberOfInstructions = new HashMap<Integer, Integer>();
             HashMap<Integer, int[]> IORequestAtInstruction = new HashMap<Integer, int[]>();
             HashMap<Integer, int[]> IODevicesRequested = new HashMap<Integer, int[]>();
 
-            int counter = 1;
             while (scanner.hasNext()) {
-                scanner.next();
+                String processID = scanner.next();
+                processID = processID.substring(0, processID.length() - 1);
                 String numberOfInstructionsAsString = scanner.next();
                 String IORequestAtInstructionAsString = scanner.next();
                 String IODevicesRequestedAsString = scanner.next();
@@ -23,13 +23,12 @@ public class Simulator {
                     scanner.nextLine();
                 }
 
-                numberOfInstructions.put(counter, parseNumberOfInstructionsInput(numberOfInstructionsAsString));
-                IORequestAtInstruction.put(counter,
-                        parseIORequestAtTimes(numberOfInstructions.get(counter), IORequestAtInstructionAsString));
-                IODevicesRequested.put(counter, parseIODevicesRequested(IORequestAtInstruction.get(counter),
-                        numberOfInstructions.get(counter), IODevicesRequestedAsString));
+                numberOfInstructions.put(Integer.valueOf(processID), parseNumberOfInstructionsInput(numberOfInstructionsAsString));
+                IORequestAtInstruction.put(Integer.valueOf(processID),
+                        parseIORequestAtTimes(numberOfInstructions.get(Integer.valueOf(processID)), IORequestAtInstructionAsString));
+                IODevicesRequested.put(Integer.valueOf(processID), parseIODevicesRequested(IORequestAtInstruction.get(Integer.valueOf(processID)),
+                        numberOfInstructions.get(Integer.valueOf(processID)), IODevicesRequestedAsString));
 
-                counter++;
             }
             scanner.close();
             Computer computer = new Computer(numberOfInstructions, IORequestAtInstruction, IODevicesRequested);

@@ -1,7 +1,6 @@
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Queue;
 
 public class Processor {
@@ -11,7 +10,7 @@ public class Processor {
     private Register register2;
     private Process currentProcess;
     private Computer computer;
-    int ticksOnCurrentProcess = 0;
+    int ticksOnCurrentProcess = 1;
     int ticks = 0;
     boolean nextProcess = true;
 
@@ -84,22 +83,22 @@ public class Processor {
                 ticks++;
             }
             updateWaitQueues();
-            
+
         }
 
     }
 
     public void contextSwitch(Process oldProcess, State oldProcessState) {
 
-    
-
         oldProcess.getPCB().getRegister1().setValue(register1.getValue());
         oldProcess.getPCB().getRegister2().setValue(register2.getValue());
 
         if (oldProcessState == State.WAITING1) {
             getComputer().getIO1().getWaitQueue().put(oldProcess, 5);
+            oldProcess.getPCB().setProcessState(State.WAITING1);
         } else if (oldProcessState == State.WAITING2) {
             getComputer().getIO2().getWaitQueue().put(oldProcess, 5);
+            oldProcess.getPCB().setProcessState(State.WAITING2);
         } else if (oldProcessState == State.READY) {
             readyQueue.add(oldProcess);
         } else if (oldProcessState == State.TERMINATED) {
@@ -112,7 +111,7 @@ public class Processor {
             register2.setValue(currentProcess.getPCB().getRegister2().getValue());
             ticksOnCurrentProcess = 0;
         } catch (Exception e) {
-           currentProcess = null;
+            currentProcess = null;
         }
 
     }
@@ -122,8 +121,9 @@ public class Processor {
      */
     public void output(int ticks, String currentProcessID) {
         System.out.println("Tick number: " + ticks);
-        System.out.println("Process ID:  " + currentProcessID);
-        System.out.print("Ready queue: ");
+        System.out.println("Current process: ");
+        printProcesPCB(currentProcess);
+        System.out.println("Ready queue: ");
         printReadyQueue();
         System.out.println("IO device 1 wait queue: ");
         printWaitQueue1();
@@ -143,6 +143,12 @@ public class Processor {
 
     /* Auxilliary functions */
 
+    public void printProcesPCB(Process process) {
+        if (process != null) {
+            process.getPCB().printPCB();
+        }
+    }
+
     public void addToQueue(Process process) {
         readyQueue.add(process);
     }
@@ -150,7 +156,7 @@ public class Processor {
     public void printReadyQueue() {
         Iterator<Process> iterator = readyQueue.iterator();
         while (iterator.hasNext()) {
-            System.out.print(iterator.next().processID);
+            iterator.next().getPCB().printPCB();
         }
         System.out.println("");
 
@@ -161,8 +167,11 @@ public class Processor {
             int processID = entry.getKey().processID;
             int timeToCompletion = entry.getValue();
             System.out.println(
-                    "--The process " + processID + " has " + timeToCompletion + " time units till completion.");
+                    "**The process " + processID + " has " + timeToCompletion + " time units till completion.**");
+
+            entry.getKey().getPCB().printPCB();
         }
+
         System.out.println("");
     }
 
@@ -171,7 +180,8 @@ public class Processor {
             int processID = entry.getKey().processID;
             int timeToCompletion = entry.getValue();
             System.out.println(
-                    "--The process " + processID + " has " + timeToCompletion + " time units till completion.");
+                    "**The process " + processID + " has " + timeToCompletion + " time units till completion.**");
+            entry.getKey().getPCB().printPCB();
         }
         System.out.println("");
     }

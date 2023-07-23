@@ -27,19 +27,21 @@ public class Process {
      */
     public int executeInstruction() {
         int nextInstruction = getPCB().getProgramCounter();
-
-        if (nextInstruction == numberOfInstructions - 1) {
-            getPCB().setProcessState(State.TERMINATED);
-        }
-
         getPCB().setProgramCounter(getPCB().getProgramCounter() + 1); // Increment program counter
+        getPCB().setCPUUsed(getPCB().CPUUsed + 1);
+
         if (IODeviceRequested[nextInstruction] == 1) {
             return 1;
         } else if (IODeviceRequested[nextInstruction] == 2) {
             return 2;
         } else {
+            if (nextInstruction == numberOfInstructions-1) {
+                getPCB().setProcessState(State.TERMINATED);
+            }
             return 0;
         }
+
+        
     }
 
     public PCB getPCB() {
@@ -53,4 +55,6 @@ public class Process {
     public int getProcessID() {
         return this.processID;
     }
+
+  
 }
