@@ -1,0 +1,207 @@
+Tick number: 0
+Current process: 
+--Process ID: 3
+--Process state: READY
+--CPU ticks used: 1
+Ready queue: 
+--Process ID: 5
+--Process state: READY
+--CPU ticks used: 0
+
+IO device 1 wait queue: 
+
+IO device 2 wait queue: 
+
+
+Tick number: 1
+Current process: 
+--Process ID: 3
+--Process state: READY
+--CPU ticks used: 2
+Ready queue: 
+--Process ID: 5
+--Process state: READY
+--CPU ticks used: 0
+
+IO device 1 wait queue: 
+
+IO device 2 wait queue: 
+
+
+Tick number: 2
+Current process: 
+--Process ID: 5
+--Process state: READY
+--CPU ticks used: 1
+Ready queue: 
+--Process ID: 3
+--Process state: READY
+--CPU ticks used: 2
+
+IO device 1 wait queue: 
+
+IO device 2 wait queue: 
+
+
+Tick number: 3
+Current process: 
+--Process ID: 5
+--Process state: READY
+--CPU ticks used: 2
+Ready queue: 
+--Process ID: 3
+--Process state: READY
+--CPU ticks used: 2
+
+IO device 1 wait queue: 
+
+IO device 2 wait queue: 
+
+
+Tick number: 4
+Current process: 
+--Process ID: 3
+--Process state: READY
+--CPU ticks used: 3
+Ready queue: 
+
+IO device 1 wait queue: 
+
+IO device 2 wait queue: 
+**The process 5 has 4 time units till completion.**
+--Process ID: 5
+--Process state: WAITING2
+--CPU ticks used: 2
+
+
+Tick number: 5
+Current process: 
+--Process ID: 3
+--Process state: READY
+--CPU ticks used: 4
+Ready queue: 
+
+IO device 1 wait queue: 
+
+IO device 2 wait queue: 
+**The process 5 has 3 time units till completion.**
+--Process ID: 5
+--Process state: WAITING2
+--CPU ticks used: 2
+
+
+Tick number: 6
+Current process: 
+--Process ID: 3
+--Process state: READY
+--CPU ticks used: 5
+Ready queue: 
+
+IO device 1 wait queue: 
+
+IO device 2 wait queue: 
+**The process 5 has 2 time units till completion.**
+--Process ID: 5
+--Process state: WAITING2
+--CPU ticks used: 2
+
+
+Tick number: 7
+Current process: 
+--Process ID: 3
+--Process state: READY
+--CPU ticks used: 6
+Ready queue: 
+
+IO device 1 wait queue: 
+
+IO device 2 wait queue: 
+**The process 5 has 1 time units till completion.**
+--Process ID: 5
+--Process state: WAITING2
+--CPU ticks used: 2
+
+
+Tick number: 8
+Current process: 
+--Process ID: 3
+--Process state: READY
+--CPU ticks used: 7
+Ready queue: 
+
+IO device 1 wait queue: 
+
+IO device 2 wait queue: 
+**The process 5 has 0 time units till completion.**
+--Process ID: 5
+--Process state: WAITING2
+--CPU ticks used: 2
+
+
+Tick number: 9
+Current process: 
+--Process ID: 3
+--Process state: READY
+--CPU ticks used: 8
+Ready queue: 
+--Process ID: 5
+--Process state: READY
+--CPU ticks used: 2
+
+IO device 1 wait queue: 
+
+IO device 2 wait queue: 
+
+
+Tick number: 10
+Current process: 
+--Process ID: 5
+--Process state: READY
+--CPU ticks used: 3
+Ready queue: 
+--Process ID: 3
+--Process state: READY
+--CPU ticks used: 8
+
+IO device 1 wait queue: 
+
+IO device 2 wait queue: 
+
+
+Tick number: 11
+Current process: 
+--Process ID: 5
+--Process state: TERMINATED
+--CPU ticks used: 4
+Ready queue: 
+--Process ID: 3
+--Process state: READY
+--CPU ticks used: 8
+
+IO device 1 wait queue: 
+
+IO device 2 wait queue: 
+
+
+Tick number: 12
+Current process: 
+--Process ID: 3
+--Process state: READY
+--CPU ticks used: 9
+Ready queue: 
+
+IO device 1 wait queue: 
+
+IO device 2 wait queue: 
+
+
+Tick number: 13
+Current process: 
+--Process ID: 3
+--Process state: TERMINATED
+--CPU ticks used: 10
+Ready queue: 
+
+IO device 1 wait queue: 
+
+IO device 2 wait queue: 
