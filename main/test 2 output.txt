@@ -1,7 +1,7 @@
 Tick number: 0
 Current process: 
 --Process ID: 1
---Process state: READY
+--Process state: RUNNING
 --CPU ticks used: 1
 Ready queue: 
 --Process ID: 3
@@ -16,7 +16,7 @@ IO device 2 wait queue:
 Tick number: 1
 Current process: 
 --Process ID: 1
---Process state: READY
+--Process state: RUNNING
 --CPU ticks used: 2
 Ready queue: 
 --Process ID: 3
@@ -31,7 +31,7 @@ IO device 2 wait queue:
 Tick number: 2
 Current process: 
 --Process ID: 3
---Process state: READY
+--Process state: RUNNING
 --CPU ticks used: 1
 Ready queue: 
 --Process ID: 1
@@ -46,7 +46,7 @@ IO device 2 wait queue:
 Tick number: 3
 Current process: 
 --Process ID: 3
---Process state: READY
+--Process state: RUNNING
 --CPU ticks used: 2
 Ready queue: 
 --Process ID: 1
@@ -61,7 +61,7 @@ IO device 2 wait queue:
 Tick number: 4
 Current process: 
 --Process ID: 1
---Process state: READY
+--Process state: RUNNING
 --CPU ticks used: 3
 Ready queue: 
 --Process ID: 3
@@ -76,7 +76,7 @@ IO device 2 wait queue:
 Tick number: 5
 Current process: 
 --Process ID: 1
---Process state: READY
+--Process state: RUNNING
 --CPU ticks used: 4
 Ready queue: 
 --Process ID: 3
@@ -91,7 +91,7 @@ IO device 2 wait queue:
 Tick number: 6
 Current process: 
 --Process ID: 3
---Process state: READY
+--Process state: RUNNING
 --CPU ticks used: 3
 Ready queue: 
 --Process ID: 1

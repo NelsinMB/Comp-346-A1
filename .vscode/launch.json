@@ -1,6 +1,12 @@
 {
     "configurations": [
-
+        {
+            "type": "java",
+            "name": "Simulator",
+            "request": "launch",
+            "mainClass": "Simulator",
+            "projectName": "pa1_40256840_c4950db5"
+        },
         {
             "type": "java",
             "name": "Simulator",

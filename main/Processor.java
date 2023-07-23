@@ -37,6 +37,7 @@ public class Processor {
 
             try {
                 currentProcess = readyQueue.remove();
+                currentProcess.getPCB().setProcessState(State.RUNNING);
             } catch (Exception e) {
 
             }
@@ -51,6 +52,7 @@ public class Processor {
                     output(ticks, "No active process");
                     if (!readyQueue.isEmpty()) {
                         currentProcess = readyQueue.remove();
+                        currentProcess.getPCB().setProcessState(State.RUNNING);
                     }
                     ticks++;
                 }
@@ -101,12 +103,14 @@ public class Processor {
             oldProcess.getPCB().setProcessState(State.WAITING2);
         } else if (oldProcessState == State.READY) {
             readyQueue.add(oldProcess);
+            oldProcess.getPCB().setProcessState(State.READY);
         } else if (oldProcessState == State.TERMINATED) {
             // Do nothing
         }
 
         try {
             currentProcess = readyQueue.remove();
+            currentProcess.getPCB().setProcessState(State.RUNNING);
             register1.setValue(currentProcess.getPCB().getRegister1().getValue());
             register2.setValue(currentProcess.getPCB().getRegister2().getValue());
             ticksOnCurrentProcess = 0;

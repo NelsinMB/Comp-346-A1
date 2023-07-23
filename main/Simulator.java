@@ -7,7 +7,8 @@ public class Simulator {
 
     public static void main(String args[]) {
         try {
-            Scanner scanner = new Scanner(new File("/Users/nelsin/Desktop/Code/Comp 346 - Assignment 1/main/test 3.txt"));
+            //Enter file path here
+            Scanner scanner = new Scanner(new File("/Users/nelsin/Desktop/Code/pa1_40256840/main/test 1.txt"));
             scanner.nextLine();
             HashMap<Integer, Integer> numberOfInstructions = new HashMap<Integer, Integer>();
             HashMap<Integer, int[]> IORequestAtInstruction = new HashMap<Integer, int[]>();
